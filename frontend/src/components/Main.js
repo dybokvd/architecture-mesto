@@ -1,10 +1,11 @@
 import React from 'react';
-import Card from './Card';
-import { CurrentUserContext } from '../contexts/CurrentUserContext';
 
-function Main({ cards, onEditProfile, onAddPlace, onEditAvatar, onCardClick, onCardLike, onCardDelete }) {
-  const currentUser = React.useContext(CurrentUserContext);
+const Places = React.lazy(
+  () => import('places/Main'),
+);
 
+const Main = ({ onEditAvatar, onEditProfile, ...props }) => {
+  const { currentUser } = props;
   const imageStyle = { backgroundImage: `url(${currentUser.avatar})` };
 
   return (
@@ -16,21 +17,11 @@ function Main({ cards, onEditProfile, onAddPlace, onEditAvatar, onCardClick, onC
           <button className="profile__edit-button" type="button" onClick={onEditProfile}></button>
           <p className="profile__description">{currentUser.about}</p>
         </div>
-        <button className="profile__add-button" type="button" onClick={onAddPlace}></button>
+        <button className="profile__add-button" type="button" onClick={() => {}}></button>
       </section>
-      <section className="places page__section">
-        <ul className="places__list">
-          {cards.map((card) => (
-            <Card
-              key={card._id}
-              card={card}
-              onCardClick={onCardClick}
-              onCardLike={onCardLike}
-              onCardDelete={onCardDelete}
-            />
-          ))}
-        </ul>
-      </section>
+      <React.Suspense fallback="Loading places">
+        <Places {...props}/>
+      </React.Suspense>
     </main>
   );
 }
