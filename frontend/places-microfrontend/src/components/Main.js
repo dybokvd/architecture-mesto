@@ -5,7 +5,7 @@ import AddPlacePopup from './AddPlacePopup';
 import api from '../utils/api';
 import '../blocks/places/places.css';
 
-function Main({ onEditProfile, onEditAvatar, currentUser }) {
+function Main({ currentUser }) {
     const [isAddPlacePopupOpen, setIsAddPlacePopupOpen] = React.useState(false);
     const [cards, setCards] = React.useState([]);
     const [selectedCard, setSelectedCard] = React.useState(null);
@@ -13,24 +13,22 @@ function Main({ onEditProfile, onEditAvatar, currentUser }) {
     // Запрос к API за информацией о массиве карточек выполняется единожды, при монтировании.
     React.useEffect(() => {
         api
-        .getCardList()
-        .then((cardData) => {
-            setCards(cardData);
-        })
-        .catch((err) => console.log(err));
+            .getCardList()
+            .then((cardData) => {
+                setCards(cardData);
+            })
+            .catch((err) => console.log(err));
     }, []);
 
     function handleCardDelete(card) {
         api
-          .removeCard(card._id)
-          .then(() => {
-            setCards((cards) => cards.filter((c) => c._id !== card._id));
-          })
-          .catch((err) => console.log(err));
-      }
-      
-    // const imageStyle = { backgroundImage: `url(${currentUser.avatar})` };
-
+            .removeCard(card._id)
+            .then(() => {
+                setCards((cards) => cards.filter((c) => c._id !== card._id));
+            })
+            .catch((err) => console.log(err));
+    }
+    
     function handleCardClick(card) {
         setSelectedCard(card);
     }
@@ -61,46 +59,36 @@ function Main({ onEditProfile, onEditAvatar, currentUser }) {
           .catch((err) => console.log(err));
       }
 
-    // function handleAddPlaceClick() {
-    //     setIsAddPlacePopupOpen(true);
-    // }
+    // TODO: вызывать этот обработчик при возникновении соответствующего события в шине событий
+    function handleAddPlacePopupOpen() {
+        setIsAddPlacePopupOpen(true);
+    }
 
     function handleAddPlacePopupClose() {
         setIsAddPlacePopupOpen(false);
     }
 
     return (
-        <main className="content">
+        <section className="places page__section">
             <ImagePopup card={selectedCard} onClose={closeImagePopup} />
             <AddPlacePopup
                 isOpen={isAddPlacePopupOpen}
                 onAddPlace={handleAddPlaceSubmit}
                 onClose={handleAddPlacePopupClose}
             />
-            {/* <section className="profile page__section">
-                <div className="profile__image" onClick={onEditAvatar} style={imageStyle}></div>
-                <div className="profile__info">
-                    <h1 className="profile__title">{currentUser.name}</h1>
-                    <button className="profile__edit-button" type="button" onClick={onEditProfile}></button>
-                    <p className="profile__description">{currentUser.about}</p>
-                </div>
-                <button className="profile__add-button" type="button" onClick={handleAddPlaceClick}></button>
-            </section> */}
-            <section className="places page__section">
-                <ul className="places__list">
-                    {cards.map((card) => (
-                        <Card
-                            key={card._id}
-                            card={card}
-                            onCardClick={handleCardClick}
-                            onCardLike={handleCardLike}
-                            onCardDelete={handleCardDelete}
-                            currentUser={currentUser}
-                        />
-                    ))}
-                </ul>
-            </section>
-        </main>
+            <ul className="places__list">
+                {cards.map((card) => (
+                    <Card
+                        key={card._id}
+                        card={card}
+                        onCardClick={handleCardClick}
+                        onCardLike={handleCardLike}
+                        onCardDelete={handleCardDelete}
+                        currentUser={currentUser}
+                    />
+                ))}
+            </ul>
+        </section>
     );
 }
 
